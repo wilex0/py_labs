@@ -128,7 +128,7 @@ class Product:
             self.__top_item = self.__histoty[self.__cur_ptr]
             self.__prefix_ptr('+')
         else:
-            raise RuntimeError("Can't use this item")
+            raise ValueError(f"date from the past - {time}")
 
     def pop_discount(self):
         self.__prefix_ptr('-')
