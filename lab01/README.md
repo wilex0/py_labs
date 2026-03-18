@@ -72,7 +72,8 @@
 ![bus1](../images/lab01/bus1.png)
 
 ### /lab01/demo.py
-![demo](../images/lab01/demo.png)
+![demo1](../images/lab01/demo1.png)
+![demo2](../images/lab01/demo2.png)
 ### Вывод
 ![out1](../images/lab01/term_out1.png)
 ![out2](../images/lab01/term_out2.png)

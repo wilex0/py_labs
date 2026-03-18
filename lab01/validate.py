@@ -2,10 +2,10 @@ from datetime import datetime
 from enums import *
 
 def validate_strs(name: str):
-        if not isinstance(name, str) or not len(name):
-            raise TypeError("Incorrect name type")
+        if not isinstance(name, str):
+            raise TypeError("Incorrect str type")
         if not len(name):
-            raise TypeError("Incorrect name length")
+            raise ValueError("Incorrect str length")
 def validate_vals(v: int):
         if not isinstance(v, int):
             raise TypeError("Incorrect value type")

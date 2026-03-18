@@ -35,6 +35,16 @@ except ValueError as e:
 
 try:
     p2.name = '' # установка пустого названия продукта 
+except ValueError as e:
+    print(f"{e}")
+
+try:
+    p2.description = ''
+except ValueError as e:
+    print(f"{e}")
+
+try:
+    p2.size = 2
 except TypeError as e:
     print(f"{e}")
 
@@ -43,12 +53,13 @@ p2.write_data(Style.NORMAL, Fore.CYAN, width=100, height=15) # записать 
 
 fd = open("data", O_WRONLY | O_CREAT)
 p2.write_data(fd=fd) #запись в файл
+remove("data")
 close(fd)
 
 print(p2.history) # история изменения скидки у объекта
 p2.pop_discount() # удаление последней установленной скидки
 print(p2.discount)
 print(p2.cost)
-print(p2.curr_cost)
+print(p2.curr_cost) # изменяется в зависимости от текущей скидки
 print(p2.id)
 print(p2.top_item)
