@@ -4,21 +4,21 @@ from datetime import datetime
 from colorama import Style, Fore
 
 def demo_objects():
-    p1 = Product(70_000, "Nikon Z 8 45.7MP", "sankaragopalak0", "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
+    p1 = Product(70_000, "Nikon Z 8 45.7MP", "sankaragopalak0", 30, "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
     p1.push_discount(20)
     p1.push_discount(50, datetime(2030, 1,2))
     p1.push_discount(15, datetime(2040, 2, 1))
     p1.write_data(color=Fore.CYAN, width= 100)
     print("История скидок первого объекта:")
-    print(p1.history)
-    p2 = Product(20_000, "Nikon Z 23 45.7MP", "sacher", "The Nikon Z 23 45.7MP Mirrorless Digital Camera.", Size.SMALL)
+    p1.print_history()
+    p2 = Product(20_000, "Nikon Z 23 45.7MP", "sacher", 40, "The Nikon Z 23 45.7MP Mirrorless Digital Camera.", Size.SMALL)
     p2.write_data()
     p2.push_discount(10)
     print("Второго:")
-    print(p2.history)
+    p2.print_history()
 
 def demo_json_rdwr():
-    p = Product(70_000, "Nikon Z 8 45.7MP", "sankaragopalak0", "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
+    p = Product(70_000, "Nikon Z 8 45.7MP", "sankaragopalak0", 20, "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
     print("Записываемый объект:")
     p.write_data()
     fd = open("data", O_RDWR | O_CREAT | O_TRUNC)
@@ -35,7 +35,7 @@ def demo_json_rdwr():
     remove("data")
 
 def demo_atrr_err():
-    p2 = Product(20_000, "Nikon Z 8 45.7MP", "sankaragopalak0", "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
+    p2 = Product(20_000, "Nikon Z 8 45.7MP", "sankaragopalak0", 10, "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
     try:
         print ("Установка скидки в 120%")
         p2.push_discount(120) # скидка в 120%
@@ -67,13 +67,17 @@ def demo_atrr_err():
     except ValueError as e:
         print(f"{e}")
 
-def demo_magic():
-    p = Product(20_000, "Nikon Z 8 45.7MP", "sankaragopalak0", "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
-    p.push_discount(44)
-    print("метод __str__")
-    print(str(p) + '\n')
-    print("метод __repr__")
-    print(p.__repr__() + '\n')
-    print("метод __eq__")
-    print("Сравнение обънетов выполняется через метод __eq__ и возмонжно только при одинаковых идентификаторах объетов, этот же сценарий возможен только при загрузки объекта из файла в json-форамте как было покано в сценарии 1")
+def demo_quantity():
+     p = Product(20_000, "Nikon Z 8 45.7MP", "sankaragopalak0", 10, "The Nikon Z 8 45.7MP Mirrorless Digital Camera is a high-performance camera designed for photography enthusiasts. With a maximum aperture of f/1.2 and a 45.7 MP maximum resolution, this camera captures stunning, detailed images.", Size.SMALL)
+     p.push_discount(30)
+     p.write_data()
+     p.append_products(20)
+     p.buy(20)
+     print(f"Текущее количество товара {p.quantity}")
+     p.buy(4)
+     print(f"Текущее количество товара {p.quantity}")
 
+demo_objects()
+demo_json_rdwr()
+demo_atrr_err()
+demo_quantity()

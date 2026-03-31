@@ -25,6 +25,10 @@ class Product:
         self.__size = new_size
     
     @property
+    def quantity(self):
+        return self.__quantity
+
+    @property
     def name(self):
         return self.__name 
     
@@ -49,7 +53,7 @@ class Product:
     @property
     def curr_cost(self):
         if self.discount:
-            return self.__cost * (1 - self.discount / 100)
+            return int(self.__cost * (1 - self.discount / 100))
         return self.__cost
         
     @property
@@ -80,14 +84,17 @@ class Product:
         if self.__top_item != None:
             return self.__top_item
     #constructors
-    def __init__(self, cost:int, name:str, seller:str, description:str, size:Size):
+    def __init__(self, cost:int, name:str, seller:str, quantity:int, description:str, size:Size):
         self.size = size
         self.name = name
         self.description = description
         self.seller = seller
-
+        
         validate_vals(cost)
         self.__cost = cost
+
+        validate_vals(quantity)
+        self.__quantity = quantity
 
         self.__cur_ptr = 0
         self.__histoty = Product.__MAX_N_HISTORY * [None]
@@ -99,14 +106,43 @@ class Product:
     @classmethod
     def load_from_json(cls, json:str):
         res = loads(json)
-        prod = cls(int(res["cost"]), res["name"], res["seller"], res["description"], Size(res["size"]))
+        prod = cls(int(res["cost"]), res["name"], res["seller"], res["quantity"], res["description"], Size(res["size"]))
         prod.__id = res["id"]
         Product.__Id -= 1
         
         if "discount" in res.keys():
-            prod.push_discount(int(res["discount"]), datetime.strptime(res["last_disctount_time"], "%Y-%m-%d"))
+            prod.push_discount(int(res["discount"]), datetime.strptime(res["last_discount_time"], "%Y-%m-%d"))
         return prod
 
+    #quantity methods
+    def append_products(self, quantity:int):
+        validate_vals(quantity)
+        self.__quantity += quantity
+        print(Fore.GREEN + f"successfully added {quantity}. Current quantity is {self.quantity}" + Fore.RESET)
+
+    def buy(self, quantity:int):
+        validate_vals(quantity)
+        if (quantity > self.quantity):
+            raise ValueError("insufficient quantity of product")
+        while (True):
+            ans = None
+            total_price = self.curr_cost * quantity
+            if self.discount:
+                ans = input(f"do you really want to buy {quantity} of the {self.name} by {self.seller} with the total price {total_price} (with {self.discount}% discount) (y/n): ")
+            else:
+                ans = input(f"do you really want to buy {quantity} of the {self.name} by {self.seller} with the total price {total_price} (y/n): ")
+
+            if ans in ['y', 'n']:
+                if ans == 'y':
+                    if quantity > 1:
+                        print(Fore.GREEN + f"you have successfully purchased {quantity} of the {self.name} for {self.curr_cost * quantity}" + Fore.RESET)
+                    else:
+                        print(Fore.GREEN + f"you have successfully purchased a {self.name} for {self.curr_cost}" + Fore.RESET)
+                    self.__quantity -= quantity
+                else:
+                    print(Fore.RED + f"operation cancelled" + Fore.RESET)
+                break
+         
     #private method
     def __prefix_ptr(self, op):
         if not op in ('+', '-'):
@@ -134,20 +170,20 @@ class Product:
         self.__prefix_ptr('-')
         self.__top_item = self.__histoty[self.__cur_ptr - 1]
 
-    def clear_duscount(self):
+    def clear_discount(self):
         for i in range(Product.__MAX_N_HISTORY):
             self.__histoty[i] = None
         self.__cur_ptr = 0
         self.__top_item = None
 
-    #output method
+    #output methods
     def write_data(self, style:Style=Style.NORMAL, color: Fore=Fore.WHITE, width=50, height = 20, fd:int=sys.stdout.fileno()):
         if fd != sys.stdout.fileno():
             res = None
             if self.__histoty[self.__cur_ptr - 1] is None:
-                res = { "name":self.__name, "id": self.__id, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value }
+                res = { "name":self.__name, "id": self.__id, "quantity": self.quantity, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value }
             else:
-                res = { "name":self.__name, "id": self.__id, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value, "discount":self.__top_item[1], "last_disctount_time": str(self.__top_item[2].date()) }
+                res = { "name":self.__name, "id": self.__id, "quantity": self.quantity, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value, "discount":self.__top_item[1], "last_discount_time": str(self.__top_item[2].date()) }
             write(fd, dumps(res).encode())
         else:
             if len(self.name) > width - 2:
@@ -164,9 +200,10 @@ class Product:
                         res += '*' + Style.DIM + (str(self.__cost) + ' / ' + str(round(self.__cost * (1 - self.discount/100)))).center(width - 2)  + Style.NORMAL + '*\n'
                     else:
                         res += '*' + Style.DIM + str(self.__cost).center(width - 2) + Style.NORMAL + '*\n'
+                    res += '*' + Style.DIM + (str(self.quantity) + ' ct').center(width - 2) + Style.NORMAL + '*\n'
 
                 elif (i == pos_desc):
-                    res += '*' + Style.BRIGHT + "Decscription:".center(width-2) + '*\n' + Style.NORMAL; 
+                    res += '*' + Style.BRIGHT + "Description:".center(width-2) + '*\n' + Style.NORMAL; 
 
                     w_cnt = len(self.__desc)
                     if w_cnt > width - 4:
@@ -189,11 +226,18 @@ class Product:
             write(fd, style.encode() + color.encode() + res.encode())
             write(fd, Fore.RESET.encode())
 
+    def print_history(self):
+        if self.history == []:
+            print(Fore.RED + "price history is empty" + Fore.RESET)
+        for i, trp in enumerate(self.history):
+            print(f"{i+1}. {trp[2].strftime("%d.%m.%Y")} => discount = {trp[1]}, current price = {trp[0]} price = {self.cost}")
+
+
     #override methods
     def __eq__(self, value):
-        if (self.__id == value.__id):
-            return True
-        return False
+        if not isinstance(value, Product):
+            return False
+        return self.__id == value.__id
     def __str__(self):
         if self.__top_item:
             return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, size: {self.__size}, description: {self.__desc}, discount: {self.__top_item[1]}, discount date: {self.__top_item[2]}"
