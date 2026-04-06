@@ -2,8 +2,8 @@ from enum import Enum
 from re import sub
 from datetime import date, datetime, time
 from colorama import Fore, Style
-from validate import *
 from enums import *
+from validate import *
 
 from os import *
 
