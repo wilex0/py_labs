@@ -30,7 +30,7 @@ def validate_strs(name: str):
 def validate_vals(v: int):
         if not isinstance(v, int):
             raise TypeError("Incorrect value type")
-        if v <= 0:
+        if v < 0:
             raise ValueError("Incorrect value")
 def validate_size(size: Size):
         if not isinstance(size, Size):
@@ -243,8 +243,8 @@ class Product:
         return self.__id == value.__id
     def __str__(self):
         if self.__top_item:
-            return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, size: {self.__size}, description: {self.__desc}, discount: {self.__top_item[1]}, discount date: {self.__top_item[2]}"
-        return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, size: {self.__size}, description: {self.__desc}"
+            return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, quantity: {self.quantity}, size: {self.__size}, description: {self.__desc}, discount: {self.__top_item[1]}, discount date: {self.__top_item[2]}"
+        return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, quantity: {self.quantity}, size: {self.__size}, description: {self.__desc}"
     def __repr__(self):
         if self.__top_item:
             return f"Product(name={self.__name}, seller={self.__seller}, cost={self.__cost}, size={self.__size}, desctiption={self.__desc}, history={self.__histoty})"
