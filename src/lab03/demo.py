@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from colorama import Fore, Style, init
-from models import Product, ProductCollection, Size
-from base import FoodProduct, DigitalProduct
+from base import Product, ProductCollection, Size
+from models import FoodProduct, DigitalProduct
 
 init(autoreset=True)
 
@@ -188,11 +188,11 @@ def demonstrate_lab3():
     print("  Применение скидок и проверка статуса для всех продуктов:")
     for p in collection:
         if isinstance(p, FoodProduct):
-            p.apply_expire_discount()
+            p.update()
             status = "просрочен" if p.is_expired() else f"годен {p.get_days_until_expiry()} дн."
             print(f"    {Fore.MAGENTA}[Food] {p.name}: статус={status}, скидка={p.discount}%")
         elif isinstance(p, DigitalProduct):
-            p.apply_rating_discount()
+            p.update()
             print(f"    {Fore.CYAN}[Digital] {p.name}: рейтинг={p.rating}, скидка={p.discount}%")
         else:
             print(f"    {Fore.WHITE}[Basic] {p.name}: цена={p.curr_cost}, скидка={p.discount}%")
@@ -260,6 +260,7 @@ def demonstrate_lab3():
     for review, rating in course.get_reviews_history():
         print(f"    {rating} - \"{review}\"")
     print()
+
 
 if __name__ == "__main__":
     demonstrate_lab3()
