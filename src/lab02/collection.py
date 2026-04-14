@@ -64,7 +64,7 @@ class ProductCollection:
     
     def find_by_size(self, size:Size):
         validate_size(size)
-        res = [i for i in self.__items if i == size]
+        res = [i for i in self.__items if i.size == size]
         if not len(res):
             return None
         return ProductCollection(res)

@@ -3,11 +3,10 @@ from re import sub
 from datetime import date, datetime, time
 from colorama import Fore, Style
 from os import *
-
-import sys
-
 from json import dumps, loads
 from enum import Enum
+import sys
+from models import *
 
 class Size(Enum):
     SMALL = 1
@@ -90,7 +89,7 @@ class Product:
     def discount(self):
         if (all(v is None for v in self.__history)):
             return 0
-        return self.__top_item[1]
+        return self._top_item[1]
     @property
     def id(self):
         return self.__id
@@ -99,8 +98,8 @@ class Product:
         return [ i for i in self.__history if i != None]
     @property
     def top_item(self):
-        if self.__top_item != None:
-            return self.__top_item
+        if self._top_item != None:
+            return self._top_item
     def __init__(self, cost:int, name:str, seller:str, quantity:int, description:str, size:Size):
         self.size = size
         self.name = name
@@ -115,7 +114,7 @@ class Product:
 
         self.__cur_ptr = 0
         self.__history = Product.__MAX_N_HISTORY * [None]
-        self.__top_item = None
+        self._top_item = None
 
         self.__id = Product.__Id + 1
         Product.__Id += 1
@@ -168,29 +167,29 @@ class Product:
         validate_percent(percent)
         validate_date(time)
 
-        if self.__top_item is None or self.__top_item[2] < time:
+        if self._top_item is None or self._top_item[2] < time:
             self.__history[self.__cur_ptr] = (self.__cost * (1 - percent / 100), percent, time)
-            self.__top_item = self.__history[self.__cur_ptr]
+            self._top_item = self.__history[self.__cur_ptr]
             self.__prefix_ptr('+')
         else:
             raise ValueError(f"date from the past - {time}")
 
     def pop_discount(self):
         self.__prefix_ptr('-')
-        self.__top_item = self.__history[self.__cur_ptr - 1]
+        self._top_item = self.__history[self.__cur_ptr - 1]
 
     def clear_discount(self):
         for i in range(Product.__MAX_N_HISTORY):
             self.__history[i] = None
         self.__cur_ptr = 0
-        self.__top_item = None
+        self._top_item = None
     def write_data(self, style:Style=Style.NORMAL, color: Fore=Fore.WHITE, width=50, height = 20, fd:int=sys.stdout.fileno()):
         if fd != sys.stdout.fileno():
             res = None
             if self.__history[self.__cur_ptr - 1] is None:
                 res = { "name":self.__name, "id": self.__id, "quantity": self.quantity, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value }
             else:
-                res = { "name":self.__name, "id": self.__id, "quantity": self.quantity, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value, "discount":self.__top_item[1], "last_discount_time": str(self.__top_item[2].date()) }
+                res = { "name":self.__name, "id": self.__id, "quantity": self.quantity, "description":self.__desc, "seller": self.__seller, "cost": self.__cost, "size": self.__size.value, "discount":self._top_item[1], "last_discount_time": str(self._top_item[2].date()) }
             write(fd, dumps(res).encode())
         else:
             if len(self.name) > width - 2:
@@ -207,7 +206,7 @@ class Product:
                         res += '*' + Style.DIM + (str(self.__cost) + ' / ' + str(round(self.__cost * (1 - self.discount/100)))).center(width - 2)  + Style.NORMAL + '*\n'
                     else:
                         res += '*' + Style.DIM + str(self.__cost).center(width - 2) + Style.NORMAL + '*\n'
-                    res += '*' + Style.DIM + (str(self.quantity) + ' ct').center(width - 2) + Style.NORMAL + '*\n'
+                    res += '*' + Style.DIM + (str(self.quantity) if self.quantity else "Unlimeted" + ' ct').center(width - 2) + Style.NORMAL + '*\n'
 
                 elif (i == pos_desc):
                     res += '*' + Style.BRIGHT + "Description:".center(width-2) + '*\n' + Style.NORMAL; 
@@ -242,10 +241,123 @@ class Product:
             return False
         return self.__id == value.__id
     def __str__(self):
-        if self.__top_item:
-            return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, quantity: {self.quantity}, size: {self.__size}, description: {self.__desc}, discount: {self.__top_item[1]}, discount date: {self.__top_item[2]}"
+        if self._top_item:
+            return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, quantity: {self.quantity}, size: {self.__size}, description: {self.__desc}, discount: {self._top_item[1]}, discount date: {self._top_item[2]}"
         return f"Product: {self.__name} by {self.__seller}, cost: {self.__cost}, quantity: {self.quantity}, size: {self.__size}, description: {self.__desc}"
     def __repr__(self):
-        if self.__top_item:
+        if self._top_item:
             return f"Product(name={self.__name}, seller={self.__seller}, cost={self.__cost}, size={self.__size}, desctiption={self.__desc}, history={self.__history})"
         return f"Product(name={self.__name}, seller={self.__seller}, cost={self.__cost}, size={self.__size}, description={self.__desc})"
+    
+class ProductCollection:
+    def __init__(self, arr=None):
+        if arr:
+            for i in arr:
+                self.__validate_product(i)
+            self.__items = arr
+        else:
+            self.__items = []
+    def append(self, p:Product):
+        self.__validate_product(p)
+        if (self.find_by_name(p.name) and self.find_by_seller(p.seller)) or self.find_by_id(p.id):
+            raise ValueError("Can't add same product")
+        self.__items.append(p)
+    def __iter__(self):
+        return iter(self.__items)
+    def __len__(self):
+        return len(self.__items)
+    def remove(self, p:Product):
+        self.__validate_product(p)
+        for i,v in enumerate(self.__items):
+            self.__validate_product(v)
+            if v.id == p.id:
+                self.__items.pop(i)
+    def __getitem__(self, i:int):
+        validate_vals(i)
+        if i < 0:
+             i += len(self.__items)
+        if i < 0 or i >= len(self.__items):
+            raise IndexError("Index out of range")
+        return self.__items[i]
+
+    def remove_at(self, i:int):
+        validate_vals(i)
+        del self.__items[i]
+    
+    def get_all(self):
+        return self.__items.copy()
+    
+    def find_by_cost(self, min:int, max:int):
+        validate_vals(min); validate_vals(max)
+        res = [i for i in self.__items if min <= i.curr_cost <= max]
+        if not len(res):
+            return None
+        return ProductCollection(res)
+
+    def find_by_quantity(self, min:int, max:int):
+        validate_vals(min); validate_vals(max)
+        res = [i for i in self.__items if min <= i.quantity <= max]
+        if not len(res):
+            return None
+        return ProductCollection(res)
+    
+    def find_by_name(self, name:str):
+        validate_strs(name)
+        res = [i for i in self.__items if i.name.lower() == name.lower()]
+        if not len(res):
+            return None
+        return ProductCollection(res)
+    
+    def find_by_size(self, size:Size):
+        validate_size(size)
+        res = [i for i in self.__items if i.size == size]
+        if not len(res):
+            return None
+        return ProductCollection(res)
+    
+    def find_by_seller(self, seller:str):
+        validate_strs(seller)
+        res = [i for i in self.__items if i.seller == seller]
+        if not len(res):
+            return None
+        return ProductCollection(res)
+
+    def find_by_id(self, id:int):
+        for i in self.__items:
+            if i.id == id:
+                return i
+        return None
+
+    def sort_by_name(self, reverse=False):
+        self.__items.sort(key=lambda x: x.name, reverse=reverse)
+    def sort_by_quantity(self, reverse=False):
+        self.__items.sort(key=lambda x: x.quantity, reverse=reverse)
+    def sort_by_cost(self, reverse=False):
+        self.__items.sort(key=lambda x: x.cost, reverse=reverse)
+    def sort_by_id(self, reverse=False):
+        self.__items.sort(key=lambda x: x.id, reverse=reverse)
+    def sort_by_size(self, reverse=False):
+        self.__items.sort(key=lambda x: x.size, reverse=reverse)
+
+    def filter(self, pred):
+        n_list = ProductCollection()
+        for i in self.__items:
+            if pred(i):
+                n_list.append(i)
+        return n_list
+    
+    def __str__(self):
+        res = ""
+        for i, v in enumerate(self.__items):
+            res += f"{i + 1}. " + str(v) + '\n'
+        return res
+
+    def __validate_product(self, p):
+        if not isinstance(p, Product):
+            raise TypeError("Incorrect object type")
+    
+    def get_has_quantity(self):
+        return self.filter(lambda x: x.quantity)
+    def get_less_than(self, cost:int):
+        validate_vals(cost)
+        return self.filter(lambda x: x.curr_cost < cost)
