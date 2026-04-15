@@ -57,4 +57,5 @@
    ![filter_polimorf](../../images/lab03/c5.png)
 
 6. Сортировка и поиск в коллекции
+
    ![find_some_in_collection](../../images/lab03/c6.png)    

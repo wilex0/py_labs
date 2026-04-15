@@ -95,7 +95,7 @@ class FoodProduct(Product):
     def print_history(self):
         if len(self.__expire_discount):
             print("expire discount history:")
-            for i,v in enumerate(self.__expire_discount):
+            for i,v in enumerate(self.__expire_discount.items()):
                 print(f"{i+1}. {v[0]} - {v[1]}")
         return super().print_history()
 
