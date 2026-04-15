@@ -6,9 +6,11 @@ from models import *
 class ProductCollection:
     def __init__(self, arr=None):
         if arr:
+            if not isinstance(arr, list):
+                raise ValueError("Incorrect array type")
             for i in arr:
                 self.__validate_product(i)
-            self.__items = arr
+            self.__items = arr.copy()
         else:
             self.__items = []
     def append(self, p:Product):
