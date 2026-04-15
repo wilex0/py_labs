@@ -3,7 +3,7 @@
 ### Базовый класс (`Product`)
 - Инкапсуляция атрибутов (название, цена, продавец, количество, описание, размер)
 - Валидация данных
-- История скидок (кольцевой буфер)
+- История скидок
 - Методы: покупка, добавление товара, применение/снятие скидки, вывод в файл/консоль
 
 ### Дочерние классы
@@ -42,23 +42,19 @@
 ## Демонстрация (`demo.py`)
 
 1. Создание объектов разных типов  
-   ![alt text](../../images/lab03/c1.png)
+   ![diff_obj](../../images/lab03/c1.png)
 
 2. Полиморфные вызовы метода `buy()`  
-   ![alt text](../../images/lab03/c2.png)
+   ![virtual_met](../../images/lab03/c2.png)
 
 3. Проверка типов через `isinstance()`  
-   ![alt text](../../images/lab03/c3.png)
+   ![types_instance](../../images/lab03/c3.png)
 
 4. Коллекция `ProductCollection` + фильтрация по типам  
-   ![alt text](../../images/lab03/c4.png)
-   ![alt text](../../images/lab03/c5.png)
+   ![collection_realize](../../images/lab03/c4.png)
 
 5. Фильтрация по типам и полиморфизм
-   ![alt text](../../images/lab03/c5.png)
+   ![filter_polimorf](../../images/lab03/c5.png)
 
 6. Сортировка и поиск в коллекции
-   ![alt text](../../images/lab03/c6.png)    
-
-7. Специфические методы дочерних классов  
-   ![alt text](../../images/lab03/c7.png)
+   ![find_some_in_collection](../../images/lab03/c6.png)    
