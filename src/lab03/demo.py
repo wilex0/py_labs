@@ -228,39 +228,6 @@ def demonstrate_lab3():
             print(f"  {p.name} от {p.seller}")
     else:
         print("  Продукт не найден")
-    print()
-    
-    print(Fore.CYAN + Style.BRIGHT + "=" * 60)
-    print(Fore.CYAN + Style.BRIGHT + "СЦЕНАРИЙ 7: Специфические методы дочерних классов".center(60))
-    print(Fore.CYAN + Style.BRIGHT + "=" * 60)
-    print()
-    
-    print(Fore.YELLOW + Style.BRIGHT + "7.1 Работа с FoodProduct")
-    print(Fore.YELLOW + "-" * 40)
-    yogurt = FoodProduct(200, "Греческий йогурт", "Danone", 40, "Без добавок", Size.SMALL, date(2026, 4, 30))
-    yogurt.storage_temp = 5
-    yogurt._FoodProduct__min_temp = 2
-    yogurt.max_temp = 8
-    
-    print(f"  Продукт: {yogurt.name}")
-    print(f"  Просрочен? {yogurt.is_expired()}")
-    print(f"  Дней до истечения: {yogurt.get_days_until_expiry()}")
-    
-    print()
-    print(Fore.YELLOW + Style.BRIGHT + "7.2 Работа с DigitalProduct")
-    print(Fore.YELLOW + "-" * 40)
-    course = DigitalProduct(4990, "Курс Data Science", "SkillFactory", 500, "Машинное обучение", Size.NORMAL)
-    course.add_review("Превосходно!", 5.0)
-    course.add_review("Хорошо", 4.0)
-    course.add_review("Средне", 3.0)
-    
-    print(f"  Продукт: {course.name}")
-    print(f"  Рейтинг: {course.rating}")
-    print(f"  История отзывов:")
-    for review, rating in course.get_reviews_history():
-        print(f"    {rating} - \"{review}\"")
-    print()
-
 
 if __name__ == "__main__":
     demonstrate_lab3()
