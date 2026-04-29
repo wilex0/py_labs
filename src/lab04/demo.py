@@ -260,7 +260,7 @@ if worst_digital_list:
 
 
 # ============ СЦЕНАРИЙ 5: Полиморфизм через интерфейсы ============
-print_scenario(5, "Полиморфизм через интерфейсы без проверки типов")
+print_scenario(5, "Полиморфизм через интерфейсы")
 
 print(f"{Fore.GREEN}5.1 Вывод объектов через интерфейс Printable:{Style.RESET_ALL}")
 for item in [milk_fresh, python_course]:
