@@ -31,7 +31,7 @@
 | `make_quantity_filter(min, max)` | фильтр по диапазону количества |
 | `make_discount_applier(percent)` | функция для применения скидки |
 
-### Callable-объекты (паттерн Стратегия)
+### Callable-объекты
 - `DiscountStrategy` — стратегия применения скидки, можно менять процент без изменения кода
 - `PrintStrategy` — стратегия печати информации о продукте (подробный/краткий режимы)
 - `UpdateStrategy` — стратегия обновления скидок для FoodProduct и DigitalProduct
