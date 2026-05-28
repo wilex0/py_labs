@@ -1,4 +1,3 @@
-# demo.py
 from datetime import datetime, timedelta, date
 from models import Product, FoodProduct, DigitalProduct, Size
 from collection import FunctionalProductCollection

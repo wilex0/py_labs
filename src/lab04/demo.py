@@ -12,7 +12,6 @@ def print_scenario(num: int, title: str):
     print(f"{'='*70}{Style.RESET_ALL}\n")
 
 
-# ============ ПОДГОТОВКА ТЕСТОВЫХ ДАННЫХ ============
 print(f"{Fore.CYAN}Подготовка тестовых данных...{Style.RESET_ALL}")
 
 milk_fresh = FoodProduct(

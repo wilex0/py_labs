@@ -1,4 +1,3 @@
-# strategies.py
 from typing import Callable, List
 from models import Product, FoodProduct, DigitalProduct, Size
 from datetime import datetime
