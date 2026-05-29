@@ -6,8 +6,6 @@ import sys
 from json import dumps, loads
 from os import write
 from typing import Optional, List, Tuple, Dict, Any, Union
-from typing import Callable, List
-from datetime import datetime
 
 class Size(Enum):
     SMALL = 1
